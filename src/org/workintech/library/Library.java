@@ -1,78 +1,91 @@
 package org.workintech.library;
 
 import org.workintech.books.Book;
+import org.workintech.person.Author;
 import org.workintech.person.Reader;
 
-import java.util.List;
+import java.util.*;
 
 public class Library {
-    private List<Book> books;
-    private List<Reader> readers;
+    private Map<Author,List<Book>> libraryContents;
 
-    public Library(List<Book> books, List<Reader> readers) {
-        this.books = books;
-        this.readers = readers;
+    public Library(Map<Author, List<Book>> libraryContents) {
+        this.libraryContents = libraryContents;
     }
 
-    public List<Book> getBooks() {
-        return books;
-    }
 
-    public void setBooks(List<Book> books) {
-        this.books = books;
-    }
-
-    public List<Reader> getReaders() {
-        return readers;
-    }
-
-    public void setReaders(List<Reader> readers) {
-        this.readers = readers;
-    }
-
-    //bookıd ile listede gezinsin bu id ile eşleşen ilk kitabı geri dönsün şeklinde çalışmalı bence?
-    public String getBook() {
-        StringBuilder sb = new StringBuilder();
-        for (Book book : books) {
-            sb.append(book.toString()).append("\n");
+    public String showBook(Author author,long bookID) {
+        Set<Author> keys=libraryContents.keySet();
+        for(Author key:keys){
+            List<Book> authorBooks=libraryContents.get(key);
+            for(Book book:authorBooks){
+                if(book.getBookID()==bookID){
+                    return book.toString();
+                }
+            }
         }
-        return sb.toString();
+        return null;
+
+    }
+    public void removeBook(Book book){
+        Author author=book.getAuthor();
+        List<Book> books =libraryContents.get(author);
+        if(books != null){
+            books.remove(book);
+        }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        // Kitaplar bölümü
-        sb.append("Library Books:\n");
-        for (Book book : books) {
-            sb.append(book.toString()).append("\n");
-        }
-
-        // Okuyucular bölümü
-        sb.append("Library Readers:\n");
-        for (Reader reader : readers) {
-            sb.append(frameReader(reader.toString())).append("\n");
-        }
-
-        return sb.toString().trim();
+    public void newBook(Book book){
+        Author author=book.getAuthor();
+        List<Book> authorBooks = libraryContents.computeIfAbsent(author, k -> new ArrayList<>());
+        authorBooks.add(book);
     }
 
-        private String frameReader(String readerInfo) {
+
+@Override
+public String toString() {
+    StringBuilder sb = new StringBuilder();
+
+    // Her yazar için kitapları göster
+    for (Map.Entry<Author, List<Book>> entry : libraryContents.entrySet()) {
+        Author author = entry.getKey();
+        List<Book> books = entry.getValue();
+
+        // Yazar ismi ve kitapların çerçeveli gösterimi
+        sb.append(frameAuthorBooks(author, books)).append("\n");
+    }
+
+    return sb.toString().trim();
+}
+
+    private String frameAuthorBooks(Author author, List<Book> books) {
         StringBuilder sb = new StringBuilder();
         String border = "*********************************";
         int width = border.length() - 4;
 
+        // Yazar ismi çerçeveleme
         sb.append(border).append("\n");
         sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
-        for (String line : readerInfo.split("\n")) {
-            sb.append("* ").append(String.format("%-" + width + "s", line)).append(" *").append("\n");
-        }
+        sb.append("* ").append(String.format("%-" + width + "s", "Author: " + author.getName())).append(" *").append("\n");
         sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
-        sb.append(border);
+
+        // Her kitap için çerçeveli gösterim
+        for (Book book : books) {
+            sb.append(border).append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "bookID: " + book.getBookID())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "title: " + book.getTitle())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "price: " + book.getPrice())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "status: " + book.getStatus())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "edition: " + book.getEdition())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "dateOfPurchase: " + book.getDateOfPurchase())).append(" *").append("\n");
+            sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+            sb.append(border).append("\n");
+        }
 
         return sb.toString();
     }
+
+
 }
 
 

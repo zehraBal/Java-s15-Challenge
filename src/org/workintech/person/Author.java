@@ -4,7 +4,7 @@ import org.workintech.books.Book;
 
 import java.util.*;
 
-public class Author extends Person{
+public class Author extends Person implements Comparable<Author>{
 
     private List<Book> books =new ArrayList<>();
 
@@ -71,5 +71,10 @@ public class Author extends Person{
     @Override
     public int hashCode() {
         return Objects.hashCode(books);
+    }
+
+    @Override
+    public int compareTo(Author other) {
+        return this.getName().compareTo(other.getName());  // Yazar isimlerine göre sıralama yapar
     }
 }

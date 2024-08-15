@@ -1,6 +1,7 @@
 package org.workintech.books;
 
 import org.workintech.person.Author;
+import org.workintech.person.Reader;
 
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ public class Book {
     private  final String edition;
     private Status status;
     private String dateOfPurchase;
+    private Reader owner;
 
     public Book( long bookID, Author author, String title, double price, Status status, String edition, String dateOfPurchase) {
         this.bookID = bookID;
@@ -24,8 +26,28 @@ public class Book {
         this.dateOfPurchase = dateOfPurchase;
     }
 
+    public long getBookID() {
+        return bookID;
+    }
+
     public String getTitle(){
         return title;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getEdition() {
+        return edition;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getDateOfPurchase() {
+        return dateOfPurchase;
     }
 
     public Author getAuthor(){
@@ -36,12 +58,16 @@ public class Book {
         this.status=status;
     }
 
-    public void getOwner(){
+    public Reader getOwner(){
+    return owner;
+    }
 
+    public void changeOwner(Reader newOwner){
+        owner=newOwner;
     }
 
     public void display(){
-
+        System.out.println(this);
     }
 
     @Override
@@ -73,6 +99,7 @@ public class Book {
         Book book = (Book) o;
         return bookID == book.bookID && Double.compare(price, book.price) == 0 && Objects.equals(author, book.author) && Objects.equals(title, book.title) && Objects.equals(edition, book.edition) && status == book.status && Objects.equals(dateOfPurchase, book.dateOfPurchase);
     }
+
 
     @Override
     public int hashCode() {
