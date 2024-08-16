@@ -4,6 +4,7 @@ import org.workintech.books.Book;
 import org.workintech.books.Status;
 import org.workintech.library.Library;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,16 @@ public class Reader extends Person{
     public Reader(String name,double budget) {
         super(name);
         this.budget=budget;
+        this.borrowedBooks=new ArrayList<>();
+        this.purchasedBooks=new ArrayList<>();
+    }
+
+    public double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(double budget) {
+        this.budget = budget;
     }
 
     public List<Book> getBorrowedBooks() {
@@ -40,13 +51,13 @@ public class Reader extends Person{
         allBooksofReader.addAll(borrowedBooks);
     }
 
-    public void purchaseBook(Book book,Library library){
+    public void purchaseBook(Book book,LocalDate purchaseDate){
         if (allBooksofReader.size()<=5 && book.getStatus()==Status.AVAILABLE && budget>=book.getPrice()){
             purchasedBooks.add(book);
             budget-=book.getPrice();
             book.updateStatus(Status.PURCHASED);
             book.changeOwner(this);
-            library.removeBook(book);
+            book.setDateOfPurchase(purchaseDate);
             System.out.println("The book purchased successfully.Remaining budget is: "+budget);
         }else{
             System.out.println("Transaction failed.");
@@ -54,14 +65,16 @@ public class Reader extends Person{
 
     }
 
-    public void borrowBook(Book book){
+    public void borrowBook(Book book,LocalDate date){
         if(allBooksofReader.size()<=5 && book.getStatus()==Status.AVAILABLE) {
             borrowedBooks.add(book);
             book.updateStatus(Status.BORROWED);
             book.changeOwner(this);
+            book.setDateOfPurchase(date);
             System.out.println("The book borrowed successfully.");
+        }else{
+            System.out.println("Transaction failed.");
         }
-        System.out.println("Transaction failed.");
 
     }
 
@@ -102,11 +115,54 @@ public class Reader extends Person{
         System.out.println("This person is a reader.");
     }
 
+
     @Override
     public String toString() {
-        return "Reader{" +
-                "borrowedBooks=" + borrowedBooks +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        String border = "*********************************";
+        int width = border.length() - 4;  // 2 spaces left, 2 spaces right
+
+        sb.append(border).append("\n");
+        sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+        sb.append("* ").append(String.format("%-" + width + "s", "Name: " + getName())).append(" *").append("\n");
+        sb.append("* ").append(String.format("%-" + width + "s", "Budget: " + budget)).append(" *").append("\n");
+        sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+
+        // Borrowed Books
+        //  sb.append(border).append("\n");
+        sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+        sb.append("* ").append(String.format("%-" + width + "s", "Borrowed Books:")).append(" *").append("\n");
+        sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+        for (Book book : borrowedBooks) {
+            //  sb.append(border).append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "bookID: " + book.getBookID())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "title: " + book.getTitle())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "price: " + book.getPrice())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "status: " + book.getStatus())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "edition: " + book.getEdition())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "dateOfPurchase: " + book.getDateOfPurchase())).append(" *").append("\n");
+            sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+            //  sb.append(border).append("\n");
+        }
+
+        // Purchased Books
+        //  sb.append(border).append("\n");
+        sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+        sb.append("* ").append(String.format("%-" + width + "s", "Purchased Books:")).append(" *").append("\n");
+        sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+        for (Book book : purchasedBooks) {
+            //   sb.append(border).append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "bookID: " + book.getBookID())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "title: " + book.getTitle())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "price: " + book.getPrice())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "status: " + book.getStatus())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "edition: " + book.getEdition())).append(" *").append("\n");
+            sb.append("* ").append(String.format("%-" + width + "s", "dateOfPurchase: " + book.getDateOfPurchase())).append(" *").append("\n");
+            sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
+            //  sb.append(border).append("\n");
+        }
+
+        return sb.toString();
     }
 
     @Override

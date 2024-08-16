@@ -2,17 +2,31 @@ package org.workintech.library;
 
 import org.workintech.books.Book;
 import org.workintech.person.Author;
+import org.workintech.person.MemberRecord;
 import org.workintech.person.Reader;
 
+import java.lang.reflect.Member;
 import java.util.*;
 
 public class Library {
     private Map<Author,List<Book>> libraryContents;
+    private List<Reader> readers;
+    private List<MemberRecord> members;
 
-    public Library(Map<Author, List<Book>> libraryContents) {
+    public Library(Map<Author, List<Book>> libraryContents,List<Reader> readers) {
         this.libraryContents = libraryContents;
+        this.readers=readers;
+        members=new ArrayList<>();
     }
 
+
+    public List<Reader> getReaders(){
+        return readers;
+    }
+
+    public List<MemberRecord> getMembers(){
+        return members;
+    }
 
     public String showBook(Author author,long bookID) {
         Set<Author> keys=libraryContents.keySet();
@@ -41,6 +55,32 @@ public class Library {
         authorBooks.add(book);
     }
 
+    public Book getBook(long bookID){
+        Set<Author> keys=libraryContents.keySet();
+        for(Author key:keys){
+            List<Book> authorBooks=libraryContents.get(key);
+            for(Book book:authorBooks){
+                if(book.getBookID()==bookID){
+                    return book;
+                }
+            }
+        }
+        return null;
+
+    }
+    public Book findBookById(long bookId) {
+        for (List<Book> books : libraryContents.values()) {
+            for (Book book : books) {
+                if (book.getBookID()==bookId) {
+                    return book;
+                }
+            }
+        }
+        return null; // Kitap bulunamadıysa null döner
+    }
+    public void addMember(MemberRecord member){
+        members.add(member);
+    }
 
 @Override
 public String toString() {

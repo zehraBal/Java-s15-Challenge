@@ -4,6 +4,7 @@ import org.workintech.person.Author;
 import org.workintech.person.Reader;
 
 import java.util.Objects;
+import java.time.LocalDate;
 
 public class Book {
 
@@ -13,17 +14,17 @@ public class Book {
     private final double price;
     private  final String edition;
     private Status status;
-    private String dateOfPurchase;
+    private LocalDate dateOfPurchase;
     private Reader owner;
 
-    public Book( long bookID, Author author, String title, double price, Status status, String edition, String dateOfPurchase) {
+    public Book( long bookID, Author author, String title, double price, Status status, String edition) {
         this.bookID = bookID;
         this.author = author;
         this.title = title;
         this.price = price;
         this.status = status;
         this.edition = edition;
-        this.dateOfPurchase = dateOfPurchase;
+
     }
 
     public long getBookID() {
@@ -46,8 +47,12 @@ public class Book {
         return status;
     }
 
-    public String getDateOfPurchase() {
+    public LocalDate getDateOfPurchase() {
         return dateOfPurchase;
+    }
+
+    public void setDateOfPurchase(LocalDate dateOfPurchase) {
+        this.dateOfPurchase = dateOfPurchase;
     }
 
     public Author getAuthor(){
@@ -69,6 +74,7 @@ public class Book {
     public void display(){
         System.out.println(this);
     }
+
 
     @Override
     public String toString() {
