@@ -16,7 +16,7 @@ public class Librarian extends Person{
     private String password;
     private Library library;
     private static AtomicInteger memberIDCounter = new AtomicInteger(0);
-    private static final double dailyFine=2.5;
+    private static final double dailyFine=1.5;
     public Librarian(String name,String password,Library library) {
         super(name);
         this.password=password;
@@ -35,28 +35,25 @@ public class Librarian extends Person{
 
     public boolean verifyMember(MemberRecord memberRecord){
       List<MemberRecord> memberRecords = library.getMembers();
-      if (verifyPassword()){
           for(MemberRecord mem: memberRecords){
               if(mem.getMemberID().equals(memberRecord.getMemberID())){
                   return true;
               }
           }
-      }
-
        return false;
     }
 
-    public boolean issueBook(long bookID,MemberRecord member,LocalDate date){
+    public void issueBook(long bookID, MemberRecord member, LocalDate date){
         if(verifyPassword()){
-            if(verifyMember(member)){
+            if(verifyMember(member) && member.getType()!=MembershipType.PENALIZED_MEMBERSHIP){
                 Book book = library.getBook(bookID);
                 if (book == null) {
                     System.out.println("The book with ID " + bookID + " is not available in the library.");
-                    return false;
+
                 }
                 if(book.getStatus()!= Status.AVAILABLE){
                     System.out.println("The book with ID " + bookID + " is not currently available.");
-                    return false;
+
                 }
                 System.out.println("Would you like to borrow or purchase this book?");
                 Scanner scanner=new Scanner(System.in);
@@ -65,31 +62,56 @@ public class Librarian extends Person{
                     member.borrowBook(book,date);
                     book.updateStatus(Status.BORROWED);
                     System.out.println("The book '" + book.getTitle() + "' has been borrowed by " + member.getName() + ".");
-                    return true;
+                    createBill( member,book,"borrow",date);
+
                 }else if(memberRequest.equals("purchase")){
                     member.purchaseBook(book,date);
                     System.out.println("The book '" + book.getTitle() + "' has been purchased by " + member.getName() + ".");
-                    return true;
+                    createBill(member,book,"purchase",date);
+
                 }
 
             }
             System.out.println("The reader is not a valid member of the library.");
-            return false;
+
         }
         System.out.println("Incorrect password. Access denied.");
-        return false;
     }
-    public void createBill(MemberRecord member, Book book, String transactionType,LocalDate date) {
-        // Verify if the member is valid
-        if (!verifyMember(member)) {
-            System.out.println("Member not valid.");
-            return;
+
+
+    public void returnBook(MemberRecord member,Book book){
+        if(book.getStatus()!=Status.PURCHASED && book.getStatus()!=Status.AVAILABLE){
+            LocalDate today=LocalDate.now();
+            long daysOverdue = ChronoUnit.DAYS.between(book.getDateOfPurchase(), today);
+            List<Book> borrowedBooks = member.getBorrowedBooks();
+            if(daysOverdue<=15){
+                borrowedBooks.remove(book);
+                book.updateStatus(Status.AVAILABLE);
+                member.setBudget(member.getBudget()+book.getPrice()*0.1);
+                System.out.println("You have returned the book within 15 days. Your deposit has been refunded.Thank you.");
+            }else if(daysOverdue>15){
+             if((member.getBudget()+book.getPrice()*0.1)>=calculateFine(book))    {
+                 borrowedBooks.remove(book);
+                 book.updateStatus(Status.AVAILABLE);
+                 member.setBudget(member.getBudget()+book.getPrice()*0.1-calculateFine(book));
+                 System.out.println("Since you did not return your book on time, the late payment penalty has been deducted from your account and your deposit has been deposited into your account.");
+             }else{
+                 borrowedBooks.remove(book);
+                 book.updateStatus(Status.AVAILABLE);
+                 member.setBudget(member.getBudget()+book.getPrice()*0.1);
+                 System.out.println("You were unable to pay the late fee because you did not have enough funds in your account. Your account has been suspended until your late fee is paid. Please pay your late fee to borrow or purchase a book.");
+                 member.updateType(MembershipType.PENALIZED_MEMBERSHIP);
+             }
+            }
         }
+    }
+
+    public void createBill(MemberRecord member, Book book, String transactionType,LocalDate date) {
 
         // Calculate the amount
         double amount = 0;
         if (transactionType.equals("borrow")) {
-         //   amount=calculateFine(book);
+           amount=calculateFine(book);
         } else if (transactionType.equals("purchase")) {
             amount=book.getPrice();
         }
@@ -115,7 +137,7 @@ public class Librarian extends Person{
        //     System.out.println("1.if döngüsüne girdi.");
             LocalDate today=LocalDate.now();
             long daysOverdue = ChronoUnit.DAYS.between(book.getDateOfPurchase(), today);
-            if (daysOverdue > 0) {
+            if (daysOverdue > 15) {
          //       System.out.println("2. if döngüsüne girdi.");
                 double fine = daysOverdue * dailyFine;
                 System.out.println("The book is " + daysOverdue + " days overdue. The fine is: $" + fine);
@@ -137,7 +159,7 @@ public class Librarian extends Person{
         return pswd.equals(password);
     }
 
-    public void registerMember(Reader reader,String type, LocalDate dateOfMembership,String address,String phoneNumber){
+    public void registerMember(Reader reader,MembershipType type, LocalDate dateOfMembership,String address,String phoneNumber){
         library.addMember(new MemberRecord(reader.getName(),reader.getBudget(),generateUniqueMemberID(),type,dateOfMembership,address,phoneNumber));
     }
     private String generateUniqueMemberID(){

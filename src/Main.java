@@ -1,11 +1,9 @@
 import org.workintech.books.Book;
 import org.workintech.books.Status;
 import org.workintech.library.Library;
-import org.workintech.person.Author;
-import org.workintech.person.Librarian;
-import org.workintech.person.MemberRecord;
-import org.workintech.person.Reader;
+import org.workintech.person.*;
 
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 
 import java.time.temporal.ChronoUnit;
@@ -119,15 +117,26 @@ public class Main {
 //         reader.borrowBook(library.getBook(8L),purchaseDate);
 //         System.out.println(library.getBook(8L).getStatus());
 //        librarian.calculateFine(newbook);
-        System.out.println(library);
+     //   System.out.println(library);
         Book newbook = allBooks.get(5);
         LocalDate borrowDate = LocalDate.of(2023, 11, 11);
-        reader.borrowBook(newbook, borrowDate);
-        System.out.println("Kitabın durumu: " + newbook.getStatus()); // BURROWED bekleniyor
+   //     reader.borrowBook(newbook, borrowDate);
+  //      System.out.println("Kitabın durumu: " + newbook.getStatus()); // BURROWED bekleniyor
 
 // Güncel durumu doğrulamak için:
-        librarian.calculateFine(newbook);
-        librarian.registerMember(reader,"new",today,"istanbul/Maltepe","5877894512");
+        librarian.registerMember(reader, MembershipType.PERSONAL_MEMBERSHIP,today,"istanbul/Maltepe","5877894512");
+        MemberRecord member=library.getMemberByID("MEM1");
         System.out.println(library.getMembers());
+       librarian.issueBook(11L,library.getMemberByID("MEM1"),today);
+        librarian.issueBook(13L,library.getMemberByID("MEM1"),today);
+//       System.out.println(  library.getMemberByID("MEM1"));
+//        System.out.println(library.getMemberByID("MEM1").getBorrowedBooks());
+//        System.out.println(reader.getBorrowedBooks());
+//        System.out.println(reader.toString());
+
+       System.out.println(member.getBorrowedBooks());
+        System.out.println(member.getPurchasedBooks());
+        System.out.println(library);
+
     }
 }

@@ -69,6 +69,7 @@ public class Reader extends Person{
         if(allBooksofReader.size()<=5 && book.getStatus()==Status.AVAILABLE) {
             borrowedBooks.add(book);
             book.updateStatus(Status.BORROWED);
+            budget-=book.getPrice()*0.1;
             book.changeOwner(this);
             book.setDateOfPurchase(date);
             System.out.println("The book borrowed successfully.");

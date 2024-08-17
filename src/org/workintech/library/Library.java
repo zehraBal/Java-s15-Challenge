@@ -28,6 +28,16 @@ public class Library {
         return members;
     }
 
+    public MemberRecord getMemberByID(String memberID){
+        for(MemberRecord mem:members){
+            if(mem.getMemberID().equals(memberID)){
+                return mem;
+            }
+        }
+        System.out.println("There is no registered member with the ID you are looking for.");
+        return null;
+    }
+
     public String showBook(Author author,long bookID) {
         Set<Author> keys=libraryContents.keySet();
         for(Author key:keys){
@@ -55,6 +65,18 @@ public class Library {
         authorBooks.add(book);
     }
 
+    public void getBooks(){
+        Set<Author> keys=libraryContents.keySet();
+        for(Author key:keys){
+            List<Book> authorBooks=libraryContents.get(key);
+            for(Book book:authorBooks){
+                System.out.println(book.toString());
+            }
+        }
+    }
+
+
+
     public Book getBook(long bookID){
         Set<Author> keys=libraryContents.keySet();
         for(Author key:keys){
@@ -68,6 +90,29 @@ public class Library {
         return null;
 
     }
+
+    public List<Book> getBooksByAuthor(Author author){
+        Set<Author> authors=libraryContents.keySet();
+       if(authors.contains(author)){
+         return  libraryContents.get(author);
+       }
+    return null;
+    }
+
+    public Book getBook(String title){
+        Set<Author> keys=libraryContents.keySet();
+        for(Author key:keys){
+            List<Book> authorBooks=libraryContents.get(key);
+            for(Book book:authorBooks){
+                if(book.getTitle().equals(title)){
+                    return book;
+                }
+            }
+        }
+        return null;
+    }
+
+
     public Book findBookById(long bookId) {
         for (List<Book> books : libraryContents.values()) {
             for (Book book : books) {
@@ -76,7 +121,7 @@ public class Library {
                 }
             }
         }
-        return null; // Kitap bulunamadıysa null döner
+        return null;
     }
     public void addMember(MemberRecord member){
         members.add(member);
