@@ -107,7 +107,7 @@ public class Main {
 //        System.out.println(library.getReaders());
 //        reader.borrowBook(newbook,purchaseDate);
 //        System.out.println(newbook.getDateOfPurchase());
-            Librarian librarian =new Librarian("Alicent","todayIsBoring1234",library);
+            Librarian librarian =new Librarian("Alicent","12345",library);
          LocalDate today=LocalDate.now();
 //        System.out.println(today);
 //        System.out.println(newbook.getStatus());
@@ -124,7 +124,7 @@ public class Main {
   //      System.out.println("Kitabın durumu: " + newbook.getStatus()); // BURROWED bekleniyor
 
 // Güncel durumu doğrulamak için:
-        librarian.registerMember(reader, MembershipType.PERSONAL_MEMBERSHIP,today,"istanbul/Maltepe","5877894512");
+        librarian.registerMember(reader, MembershipType.PERSONAL_MEMBERSHIP ,today,"istanbul/Maltepe","5877894512");
         MemberRecord member=library.getMemberByID("MEM1");
         System.out.println(library.getMembers());
        librarian.issueBook(11L,library.getMemberByID("MEM1"),today);
@@ -134,9 +134,11 @@ public class Main {
 //        System.out.println(reader.getBorrowedBooks());
 //        System.out.println(reader.toString());
 
-       System.out.println(member.getBorrowedBooks());
-        System.out.println(member.getPurchasedBooks());
-        System.out.println(library);
-
+  //     System.out.println(member.getBorrowedBooks());
+ //       System.out.println(member.getPurchasedBooks());
+  //      System.out.println(library);
+        System.out.println(member);
+    librarian.returnBook(member,library.getBook(11L));
+        System.out.println(member);
     }
 }

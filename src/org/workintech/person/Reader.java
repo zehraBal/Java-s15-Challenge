@@ -46,10 +46,10 @@ public class Reader extends Person{
     public void setPurchasedBooks(List<Book> purchasedBooks) {
         this.purchasedBooks = purchasedBooks;
     }
-    private final void getAllBooks(){
-        allBooksofReader.addAll(purchasedBooks);
-        allBooksofReader.addAll(borrowedBooks);
-    }
+//    private final void getAllBooks(){
+//        allBooksofReader.addAll(purchasedBooks);
+//        allBooksofReader.addAll(borrowedBooks);
+//    }
 
     public void purchaseBook(Book book,LocalDate purchaseDate){
         if (allBooksofReader.size()<=5 && book.getStatus()==Status.AVAILABLE && budget>=book.getPrice()){
@@ -69,7 +69,7 @@ public class Reader extends Person{
         if(allBooksofReader.size()<=5 && book.getStatus()==Status.AVAILABLE) {
             borrowedBooks.add(book);
             book.updateStatus(Status.BORROWED);
-            budget-=book.getPrice()*0.1;
+            budget-=book.getPrice()*0.2;
             book.changeOwner(this);
             book.setDateOfPurchase(date);
             System.out.println("The book borrowed successfully.");

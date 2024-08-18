@@ -5,13 +5,13 @@ import org.workintech.books.Book;
 import java.time.LocalDate;
 
 public class MemberRecord extends Reader{
-   private String memberID;
+   private final String memberID;
    private MembershipType type;
-   private LocalDate dateOfMembership;
+   private final LocalDate dateOfMembership;
    private int numberOfBooksIssued;
-   private int maxBookLimit;
-   private String address;
-   private String phoneNumber;
+   private final int maxBookLimit;
+   private final String address;
+   private final String phoneNumber;
 
 
     public MemberRecord(String name, double budget, String memberID, MembershipType type, LocalDate dateOfMembership, String address, String phoneNumber) {
@@ -38,9 +38,7 @@ public class MemberRecord extends Reader{
         this.type = type;
     }
 
-    private void setNumberOfBooksIssued(){
-    Integer booksIssued=this.getBorrowedBooks().size()+this.getPurchasedBooks().size();
-    }
+
     @Override
     public void borrowBook(Book book, LocalDate date) {
         super.borrowBook(book, date);

@@ -13,9 +13,9 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Librarian extends Person{
-    private String password;
-    private Library library;
-    private static AtomicInteger memberIDCounter = new AtomicInteger(0);
+    private final String password;
+    private final Library library;
+    private static final AtomicInteger memberIDCounter = new AtomicInteger(0);
     private static final double dailyFine=1.5;
     public Librarian(String name,String password,Library library) {
         super(name);
@@ -87,18 +87,18 @@ public class Librarian extends Person{
             if(daysOverdue<=15){
                 borrowedBooks.remove(book);
                 book.updateStatus(Status.AVAILABLE);
-                member.setBudget(member.getBudget()+book.getPrice()*0.1);
+                member.setBudget(member.getBudget()+book.getPrice()*0.2);
                 System.out.println("You have returned the book within 15 days. Your deposit has been refunded.Thank you.");
             }else if(daysOverdue>15){
-             if((member.getBudget()+book.getPrice()*0.1)>=calculateFine(book))    {
+             if((member.getBudget()+book.getPrice()*0.2)>=calculateFine(book))    {
                  borrowedBooks.remove(book);
                  book.updateStatus(Status.AVAILABLE);
-                 member.setBudget(member.getBudget()+book.getPrice()*0.1-calculateFine(book));
+                 member.setBudget(member.getBudget()+book.getPrice()*0.2-calculateFine(book));
                  System.out.println("Since you did not return your book on time, the late payment penalty has been deducted from your account and your deposit has been deposited into your account.");
              }else{
                  borrowedBooks.remove(book);
                  book.updateStatus(Status.AVAILABLE);
-                 member.setBudget(member.getBudget()+book.getPrice()*0.1);
+                 member.setBudget(member.getBudget()+book.getPrice()*0.2);
                  System.out.println("You were unable to pay the late fee because you did not have enough funds in your account. Your account has been suspended until your late fee is paid. Please pay your late fee to borrow or purchase a book.");
                  member.updateType(MembershipType.PENALIZED_MEMBERSHIP);
              }
@@ -108,16 +108,17 @@ public class Librarian extends Person{
 
     public void createBill(MemberRecord member, Book book, String transactionType,LocalDate date) {
 
-        // Calculate the amount
-        double amount = 0;
+        double price = 0;
+        double deposit = 0;
         if (transactionType.equals("borrow")) {
-           amount=calculateFine(book);
+            deposit = book.getPrice() * 0.2;
         } else if (transactionType.equals("purchase")) {
-            amount=book.getPrice();
+            price = book.getPrice();
         }
 
         // Create the bill details
         StringBuilder bill = new StringBuilder();
+        bill.append("\n");
         bill.append("*********************************\n");
         bill.append("*             BILL              *\n");
         bill.append("*********************************\n");
@@ -125,7 +126,14 @@ public class Librarian extends Person{
         bill.append("* Book: ").append(book.getTitle()).append("\n");
         bill.append("* Transaction: ").append(transactionType.equals("borrow") ? "Borrowed" : "Purchased").append("\n");
         bill.append("* Date: ").append(new Date()).append("\n");
-        bill.append("* Amount: $").append(String.format("%.2f", amount)).append("\n");
+
+        if (transactionType.equals("borrow")) {
+            bill.append("* Deposit: $").append(String.format("%.2f", deposit)).append("\n");
+        }
+
+        if (transactionType.equals("purchase")) {
+            bill.append("* Price: $").append(String.format("%.2f", price)).append("\n");
+        }
         bill.append("*********************************\n");
 
         // Print the bill
@@ -149,14 +157,13 @@ public class Librarian extends Person{
         return 0;
     }
 
-    public void createBill(Book book){
 
-    }
     private boolean verifyPassword(){
         System.out.println("Please enter your password.");
         Scanner scanner =new Scanner(System.in);
         String pswd=scanner.next();
         return pswd.equals(password);
+
     }
 
     public void registerMember(Reader reader,MembershipType type, LocalDate dateOfMembership,String address,String phoneNumber){
