@@ -115,14 +115,14 @@ public class LibraryApp {
         libraryContents.put(bradbury,bradburyBooks);
         libraryContents.put(clarke,clarkeBooks);
 
-
+        System.out.println(tolkienBooks);
         // Başlangıç okuyucuları
-        Reader reader1 = new Reader("John Doe", 50.00);
-        Reader reader2 = new Reader("Jane Smith", 30.00);
-        Reader reader3 = new Reader("Alice Johnson", 40.00);
-        Reader reader4 = new Reader("Bob Brown", 20.00);
+        Reader reader1 = new Reader("John Doe", 500.00);
+        Reader reader2 = new Reader("Jane Smith", 300.00);
+        Reader reader3 = new Reader("Alice Johnson", 400.00);
+        Reader reader4 = new Reader("Bob Brown", 200.00);
 
-        List<Reader> readers = new ArrayList<>(List.of(reader1, reader2));
+        List<Reader> readers = new ArrayList<>(List.of(reader1, reader2,reader3,reader4));
 
         // Kütüphane ve kütüphaneci oluşturma
         Library library = new Library(libraryContents, readers);
@@ -134,20 +134,17 @@ public class LibraryApp {
         while (!exit) {
             System.out.println("Welcome to the Library! Please choose an option:");
             System.out.println("1. Search for a book");
-            System.out.println("2. Borrow a book (Members only)");
-            System.out.println("3. Purchase a book");
-            System.out.println("4. Become a member");
-            System.out.println("5. Pay late fee (Members only)");
-            System.out.println("6. Show membership details");
-            System.out.println("7. Show reader details");
-            System.out.println("8. Show borrowed books (Members only)");
-            System.out.println("9. Show purchased books");
-            System.out.println("10. Show all books in library");
-            System.out.println("11. Show all readers");
-            System.out.println("12. Show all members");
-            System.out.println("13. Return book(Members only");
-            System.out.println("14. Exit");
-
+            System.out.println("2. Issue book");
+            System.out.println("3. Pay late fee (Members only)");
+            System.out.println("4. Show membership details");
+            System.out.println("5. Show reader details");
+            System.out.println("6. Show borrowed books (Members only)");
+            System.out.println("7. Show purchased books");
+            System.out.println("8. Show all books in library");
+            System.out.println("9. Show all readers" );
+            System.out.println("10. Show all members");
+            System.out.println("11. Become a member");
+            System.out.println("13. Exit");
             System.out.print("Your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();  // Consume newline
@@ -164,48 +161,173 @@ public class LibraryApp {
                     }
                     break;
 
-                case 2:  // Borrow a book (Members only)
-                    System.out.print("Enter your Member ID: ");
-                    String memberId = scanner.nextLine();
-                    MemberRecord member = library.getMemberByID(memberId);
-                    if (member != null) {
-                        System.out.print("Enter the ID of the book you want to borrow: ");
-                        long bookId = scanner.nextLong();
-                        Book bookToBorrow = library.getBook(bookId);
-                        if (bookToBorrow != null && bookToBorrow.getStatus() == Status.AVAILABLE) {
-                            member.borrowBook(bookToBorrow, LocalDate.now());
-                            library.lendBook(bookToBorrow);
+                case 2:  // Issue Book
+                    System.out.println("What would you like to do?");
+                    System.out.println("1. Borrow book (Members only)");
+                    System.out.println("2. Purchase book");
+                    System.out.println("3. Return book");
+                    System.out.println("Your Choice:");
+                    int transactionChoice = scanner.nextInt();
+                    scanner.nextLine();  // Consume newline
+                    if (transactionChoice == 1) {
+                        System.out.print("Enter your Member ID: ");
+                        String memberId = scanner.nextLine();
+                        MemberRecord member = library.getMemberByID(memberId);
+                        if (member != null) {
+                            System.out.print("Enter the ID of the book you want to borrow: ");
+                            long bookId = scanner.nextLong();
+                            Book bookToBorrow = library.getBook(bookId);
+                            if (bookToBorrow != null && bookToBorrow.getStatus() == Status.AVAILABLE) {
+                                member.borrowBook(bookToBorrow,LocalDate.now());
+                                librarian.issueBook(bookId,"borrow");
+                            } else {
+                                System.out.println("The book is not available.");
+                            }
                         } else {
-                            System.out.println("The book is not available.");
+                            System.out.println("Member not found.");
+                        }
+
+                    } else if (transactionChoice == 2) {
+                        System.out.println("Enter your name ");
+                        String aname = scanner.nextLine();
+                        Reader reader = library.findReaderByName(aname);
+                        if (reader != null) {
+                            System.out.print("Enter the ID of the book you want to purchase: ");
+                            long bookId = scanner.nextLong();
+                            Book bookToPurchase = library.getBook(bookId);
+                            if (bookToPurchase != null && bookToPurchase.getStatus() == Status.AVAILABLE) {
+                                reader.purchaseBook(bookToPurchase, LocalDate.now());
+                                librarian.issueBook(bookId,"purchase");
+                            } else {
+                                System.out.println("The book is not available.");
+                            }
+                        } else {
+                            System.out.println("Reader not found.");
+                        }
+                    } else if (transactionChoice==3) {
+                        System.out.print("Enter your Member ID: ");
+                       String memberId = scanner.nextLine();
+                       MemberRecord member = library.getMemberByID(memberId);
+                        if(member!=null){
+                            System.out.println("Enter the ID of the book you want to return.");
+                            long bookID = scanner.nextLong();
+                            librarian.returnBook(member,member.getBorrowedBookById(bookID));
+                            librarian.issueBook(bookID,"return");
+                        }
+                        break;
+
+                    } else {
+                        System.out.println("Invalid choice.");
+                    }
+
+                    break;
+
+
+
+                case 3:  // Pay late fee (Members only)
+                    System.out.print("Enter your Member ID: ");
+                  String  memberId = scanner.nextLine();
+                  MemberRecord  member = library.getMemberByID(memberId);
+                    if (member != null) {
+                        if (member.getType() == MembershipType.PENALIZED_MEMBERSHIP) {
+                            member.payLateFee(member.getLateReturnFee());
+                        } else {
+                            System.out.println("You don't have any late fees or you're not penalized.");
+                        }
+                    }
+                    break;
+
+                case 4:  // Show membership details
+                    System.out.print("Enter your Member ID: ");
+                    memberId = scanner.nextLine();
+                    member = library.getMemberByID(memberId);
+                    if (member != null) {
+                        System.out.println(member);
+                    } else {
+                        System.out.println("Member not found.");
+                    }
+                    break;
+
+                case 5:  // Show reader details
+                    System.out.print("Enter your name: ");
+                  String  name = scanner.nextLine();
+                  Reader  reader = library.findReaderByName(name);
+                    if (reader != null) {
+                        System.out.println(reader);
+                    } else {
+                        System.out.println("Reader not found.");
+                    }
+                    break;
+
+                case 6:  // Show borrowed books (Members only)
+                    System.out.print("Enter your Member ID: ");
+                    memberId = scanner.nextLine();
+                    member = library.getMemberByID(memberId);
+                    if (member != null) {
+                        List<Book> borrowedBooks = member.getBorrowedBooks();
+                        if (borrowedBooks.isEmpty()) {
+                            System.out.println("No borrowed books.");
+                        } else {
+                            borrowedBooks.forEach(System.out::println);
                         }
                     } else {
                         System.out.println("Member not found.");
                     }
                     break;
 
-                case 3:  // Purchase a book
+                case 7:  // Show purchased books
                     System.out.print("Enter your name: ");
-                    String name = scanner.nextLine();
-                    Reader reader = library.findReaderByName(name);
+                    name = scanner.nextLine();
+                    reader = library.findReaderByName(name);
                     if (reader != null) {
-                        System.out.print("Enter the ID of the book you want to purchase: ");
-                        long bookId = scanner.nextLong();
-                        Book bookToPurchase = library.getBook(bookId);
-                        if (bookToPurchase != null && bookToPurchase.getStatus() == Status.AVAILABLE) {
-                            reader.purchaseBook(bookToPurchase, LocalDate.now());
-                            library.removeBook(bookToPurchase);
+                        List<Book> purchasedBooks = reader.getPurchasedBooks();
+                        if (purchasedBooks.isEmpty()) {
+                            System.out.println("No purchased books.");
                         } else {
-                            System.out.println("The book is not available.");
+                            purchasedBooks.forEach(System.out::println);
                         }
                     } else {
                         System.out.println("Reader not found.");
                     }
                     break;
 
-                case 4:  // Become a member
+                case 8:  // Show all books in library
+                    library.getBooks();
+                    break;
+
+                case 9:  // Show all readers
+                    List<Reader> allReaders = library.getReaders();
+                    if (allReaders.isEmpty()) {
+                        System.out.println("No readers found.");
+                    } else {
+                        allReaders.forEach(System.out::println);
+                    }
+                    break;
+
+                case 10:  // Show all members
+                    List<MemberRecord> allMembers = library.getMembers();
+                    if (allMembers.isEmpty()) {
+                        System.out.println("No members found.");
+                    } else {
+                        allMembers.forEach(System.out::println);
+                    }
+                    break;
+
+//                case 13:  // Return book
+//                    System.out.print("Enter your Member ID: ");
+//                    memberId = scanner.nextLine();
+//                    member = library.getMemberByID(memberId);
+//                    if(member!=null){
+//                        System.out.println("Enter the ID of the book you want to return.");
+//                       long bookID = scanner.nextLong();
+//                       librarian.returnBook(member,member.getBorrowedBookById(bookID));
+//                    }
+//                    break;
+
+                case 11: //Become a member
                     System.out.print("Enter your name: ");
                     name = scanner.nextLine();
-                    reader = library.findReaderByName(name);
+                     reader = library.findReaderByName(name);
                     if (reader != null) {
                         // Üyelik tipini seçtir
                         System.out.println("Select a membership type:");
@@ -244,114 +366,13 @@ public class LibraryApp {
                         System.out.print("Enter your phone number: ");
                         String phoneNumber = scanner.nextLine();
 
-                        // Üyeyi kaydet
-                       String memberID= librarian.registerMember(reader, selectedMembershipType, LocalDate.now(), address, phoneNumber);
+                        librarian.registerMember(reader, selectedMembershipType, LocalDate.now(), address, phoneNumber);
 
 
-                        // Yeni üyenin Member ID'sini göster
-                        System.out.println(library.getMemberByID(memberID));
                     }
                     break;
 
-                case 5:  // Pay late fee (Members only)
-                    System.out.print("Enter your Member ID: ");
-                    memberId = scanner.nextLine();
-                    member = library.getMemberByID(memberId);
-                    if (member != null) {
-                        if (member.getType() == MembershipType.PENALIZED_MEMBERSHIP) {
-                            member.payLateFee(member.getLateReturnFee());
-                        } else {
-                            System.out.println("You don't have any late fees or you're not penalized.");
-                        }
-                    }
-                    break;
-
-                case 6:  // Show membership details
-                    System.out.print("Enter your Member ID: ");
-                    memberId = scanner.nextLine();
-                    member = library.getMemberByID(memberId);
-                    if (member != null) {
-                        System.out.println(member);
-                    } else {
-                        System.out.println("Member not found.");
-                    }
-                    break;
-
-                case 7:  // Show reader details
-                    System.out.print("Enter your name: ");
-                    name = scanner.nextLine();
-                    reader = library.findReaderByName(name);
-                    if (reader != null) {
-                        System.out.println(reader);
-                    } else {
-                        System.out.println("Reader not found.");
-                    }
-                    break;
-
-                case 8:  // Show borrowed books (Members only)
-                    System.out.print("Enter your Member ID: ");
-                    memberId = scanner.nextLine();
-                    member = library.getMemberByID(memberId);
-                    if (member != null) {
-                        List<Book> borrowedBooks = member.getBorrowedBooks();
-                        if (borrowedBooks.isEmpty()) {
-                            System.out.println("No borrowed books.");
-                        } else {
-                            borrowedBooks.forEach(System.out::println);
-                        }
-                    } else {
-                        System.out.println("Member not found.");
-                    }
-                    break;
-
-                case 9:  // Show purchased books
-                    System.out.print("Enter your name: ");
-                    name = scanner.nextLine();
-                    reader = library.findReaderByName(name);
-                    if (reader != null) {
-                        List<Book> purchasedBooks = reader.getPurchasedBooks();
-                        if (purchasedBooks.isEmpty()) {
-                            System.out.println("No purchased books.");
-                        } else {
-                            purchasedBooks.forEach(System.out::println);
-                        }
-                    } else {
-                        System.out.println("Reader not found.");
-                    }
-                    break;
-
-                case 10:  // Show all books in library
-                    library.getBooks();
-                    break;
-
-                case 11:  // Show all readers
-                    List<Reader> allReaders = library.getReaders();
-                    if (allReaders.isEmpty()) {
-                        System.out.println("No readers found.");
-                    } else {
-                        allReaders.forEach(System.out::println);
-                    }
-                    break;
-
-                case 12:  // Show all members
-                    List<MemberRecord> allMembers = library.getMembers();
-                    if (allMembers.isEmpty()) {
-                        System.out.println("No members found.");
-                    } else {
-                        allMembers.forEach(System.out::println);
-                    }
-                    break;
-
-                case 13:  // Return book
-                    System.out.print("Enter your Member ID: ");
-                    memberId = scanner.nextLine();
-                    member = library.getMemberByID(memberId);
-                    if(member!=null){
-                        System.out.println("Enter the ID of the book you want to return.");
-                       long bookID = scanner.nextLong();
-                       librarian.returnBook(member,library.getBook(bookID));
-                    }
-                case 14:  // Exit
+                case 12:  // Exit
                     System.out.println("Thank you for visiting the library. Goodbye!");
                     exit = true;
                     break;

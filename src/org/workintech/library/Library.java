@@ -66,6 +66,7 @@ public class Library {
         List<Book> books =libraryContents.get(author);
         if(books != null){
             books.remove(book);
+            System.out.println("Transaction complete.");
         }
     }
 
@@ -139,16 +140,20 @@ public void getBooks() {
         }
         return null;
     }
-    public String addMember(MemberRecord member){
-        members.add(member);
-        return member.getMemberID();
+
+
+    public void updateReaderToMember(Reader reader, MemberRecord memberRecord) {
+        readers.remove(reader); // Remove the old reader
+        members.add(memberRecord); // Add the new member
     }
+
 
     public void lendBook(Book book){
         List<Book> books=libraryContents.get(book.getAuthor());
        if(books.contains(book)){
            books.remove(book);
            libraryContents.put(book.getAuthor(),books);
+           System.out.println("Transaction complete.");
        }
     }
 
@@ -157,6 +162,7 @@ public void getBooks() {
         if(!books.contains(book)){
             books.add(book);
             libraryContents.put(book.getAuthor(),books);
+            System.out.println("Transaction complete.");
         }
     }
 

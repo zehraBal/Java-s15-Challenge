@@ -33,54 +33,66 @@ public class Librarian extends Person{
 
     }
 
-    public boolean verifyMember(MemberRecord memberRecord){
-      List<MemberRecord> memberRecords = library.getMembers();
-          for(MemberRecord mem: memberRecords){
-              if(mem.getMemberID().equals(memberRecord.getMemberID())){
-                  return true;
-              }
-          }
-       return false;
+    public boolean verifyMember(Reader reader){
+        return reader instanceof MemberRecord;
     }
 
-    public void issueBook(long bookID, MemberRecord member, LocalDate date){
-        if(verifyPassword()){
-            if(verifyMember(member) && member.getType()!=MembershipType.PENALIZED_MEMBERSHIP){
-                Book book = library.getBook(bookID);
-                if (book == null) {
-                    System.out.println("The book with ID " + bookID + " is not available in the library.");
-
-                }
-                if(book.getStatus()!= Status.AVAILABLE){
-                    System.out.println("The book with ID " + bookID + " is not currently available.");
-
-                }
-                System.out.println("Would you like to borrow or purchase this book?");
-                Scanner scanner=new Scanner(System.in);
-                String memberRequest=scanner.next().toLowerCase();
-                if(memberRequest.equals("borrow")){
-                    member.borrowBook(book,date);
-                    book.updateStatus(Status.BORROWED);
-                    library.lendBook(book);
-                    System.out.println("The book '" + book.getTitle() + "' has been borrowed by " + member.getName() + ".");
-                    createBill( member,book,"borrow",date);
-
-                }else if(memberRequest.equals("purchase")){
-                    member.purchaseBook(book,date);
-                    book.updateStatus(Status.PURCHASED);
-                    library.removeBook(book);
-                    System.out.println("The book '" + book.getTitle() + "' has been purchased by " + member.getName() + ".");
-
-                    createBill(member,book,"purchase",date);
-
-                }
-
+//    public void issueBook(long bookID, MemberRecord member, LocalDate date){
+//        if(verifyPassword()){
+//            if(verifyMember(member) && member.getType()!=MembershipType.PENALIZED_MEMBERSHIP){
+//                Book book = library.getBook(bookID);
+//                if (book == null) {
+//                    System.out.println("The book with ID " + bookID + " is not available in the library.");
+//
+//                }
+//                if(book.getStatus()!= Status.AVAILABLE){
+//                    System.out.println("The book with ID " + bookID + " is not currently available.");
+//
+//                }
+//                System.out.println("Would you like to borrow or purchase this book?");
+//                Scanner scanner=new Scanner(System.in);
+//                String memberRequest=scanner.next().toLowerCase();
+//                if(memberRequest.equals("borrow")){
+//                    member.borrowBook(book,date);
+//                    book.updateStatus(Status.BORROWED);
+//                    library.lendBook(book);
+//                    System.out.println("The book '" + book.getTitle() + "' has been borrowed by " + member.getName() + ".");
+//                    createBill( member,book,"borrow",date);
+//
+//                }else if(memberRequest.equals("purchase")){
+//                    member.purchaseBook(book,date);
+//                    book.updateStatus(Status.PURCHASED);
+//                    library.removeBook(book);
+//                    System.out.println("The book '" + book.getTitle() + "' has been purchased by " + member.getName() + ".");
+//
+//                    createBill(member,book,"purchase",date);
+//
+//                }
+//
+//            }
+//            System.out.println("The reader is not a valid member of the library.");
+//
+//        }
+//        System.out.println("Incorrect password. Access denied.");
+//    }
+public void issueBook(long bookID, String action) {
+    if (verifyPassword()) {
+        Book book = library.getBook(bookID);
+        switch (action) {
+            case "borrow" -> {
+                ;
+                library.lendBook(book);
             }
-            System.out.println("The reader is not a valid member of the library.");
+            case "purchase" -> library.removeBook(book);
+
+            case "return" -> library.takeBackBook(book);
 
         }
-        System.out.println("Incorrect password. Access denied.");
+
     }
+
+}
+
 
 
     public void returnBook(MemberRecord member,Book book){
@@ -112,7 +124,7 @@ public class Librarian extends Person{
         }
     }
 
-    public void createBill(MemberRecord member, Book book, String transactionType,LocalDate date) {
+    public void createBill(Reader member, Book book, String transactionType,LocalDate date) {
 
         double price = 0;
         double deposit = 0;
@@ -165,15 +177,19 @@ public class Librarian extends Person{
 
 
     private boolean verifyPassword(){
-        System.out.println("Please enter your password.");
+        System.out.println("This operation requires admin permission, please enter your password.");
         Scanner scanner =new Scanner(System.in);
         String pswd=scanner.next();
         return pswd.equals(password);
 
     }
 
-    public String registerMember(Reader reader,MembershipType type, LocalDate dateOfMembership,String address,String phoneNumber){
-      return  library.addMember(new MemberRecord(reader.getName(),reader.getBudget(),generateUniqueMemberID(),type,dateOfMembership,address,phoneNumber));
+    public String  registerMember(Reader reader,MembershipType type, LocalDate dateOfMembership,String address,String phoneNumber){
+        MemberRecord member=new MemberRecord(reader.getName(),reader.getBudget(),generateUniqueMemberID(),type,dateOfMembership,address,phoneNumber);
+        library.updateReaderToMember(reader,member);
+        System.out.println(member);
+        return member.getMemberID();
+
     }
     private String generateUniqueMemberID(){
         return "MEM"+memberIDCounter.incrementAndGet();

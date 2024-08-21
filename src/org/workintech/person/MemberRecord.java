@@ -3,6 +3,7 @@ package org.workintech.person;
 import org.workintech.books.Book;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 public class MemberRecord extends Reader{
@@ -127,5 +128,15 @@ public class MemberRecord extends Reader{
         builder.append(line).append("\n");
 
         return builder.toString();
+    }
+
+    public Book getBorrowedBookById(long bookID) {
+      List<Book> borrowedBooks=  getBorrowedBooks();
+      for(Book b:borrowedBooks){
+          if(b.getBookID()==bookID){
+              return b;
+          }
+      }
+      return null;
     }
 }

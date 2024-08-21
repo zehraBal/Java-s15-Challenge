@@ -165,6 +165,6 @@ public class Main {
 //        Library library = new Library(libraryContents, readers);
 //        System.out.println(libraryContents);
 //        library.getBooks();
-        library.getBooks();
+        library.getBook("Daha");
     }
 }
