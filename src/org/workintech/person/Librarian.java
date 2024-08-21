@@ -61,12 +61,16 @@ public class Librarian extends Person{
                 if(memberRequest.equals("borrow")){
                     member.borrowBook(book,date);
                     book.updateStatus(Status.BORROWED);
+                    library.lendBook(book);
                     System.out.println("The book '" + book.getTitle() + "' has been borrowed by " + member.getName() + ".");
                     createBill( member,book,"borrow",date);
 
                 }else if(memberRequest.equals("purchase")){
                     member.purchaseBook(book,date);
+                    book.updateStatus(Status.PURCHASED);
+                    library.removeBook(book);
                     System.out.println("The book '" + book.getTitle() + "' has been purchased by " + member.getName() + ".");
+
                     createBill(member,book,"purchase",date);
 
                 }
@@ -84,12 +88,13 @@ public class Librarian extends Person{
             LocalDate today=LocalDate.now();
             long daysOverdue = ChronoUnit.DAYS.between(book.getDateOfPurchase(), today);
             List<Book> borrowedBooks = member.getBorrowedBooks();
+            library.takeBackBook(book);
             if(daysOverdue<=15){
                 borrowedBooks.remove(book);
                 book.updateStatus(Status.AVAILABLE);
                 member.setBudget(member.getBudget()+book.getPrice()*0.2);
                 System.out.println("You have returned the book within 15 days. Your deposit has been refunded.Thank you.");
-            }else if(daysOverdue>15){
+            }else {
              if((member.getBudget()+book.getPrice()*0.2)>=calculateFine(book))    {
                  borrowedBooks.remove(book);
                  book.updateStatus(Status.AVAILABLE);
@@ -99,6 +104,7 @@ public class Librarian extends Person{
                  borrowedBooks.remove(book);
                  book.updateStatus(Status.AVAILABLE);
                  member.setBudget(member.getBudget()+book.getPrice()*0.2);
+                 member.setLateReturnFee(calculateFine(book));
                  System.out.println("You were unable to pay the late fee because you did not have enough funds in your account. Your account has been suspended until your late fee is paid. Please pay your late fee to borrow or purchase a book.");
                  member.updateType(MembershipType.PENALIZED_MEMBERSHIP);
              }
@@ -166,8 +172,8 @@ public class Librarian extends Person{
 
     }
 
-    public void registerMember(Reader reader,MembershipType type, LocalDate dateOfMembership,String address,String phoneNumber){
-        library.addMember(new MemberRecord(reader.getName(),reader.getBudget(),generateUniqueMemberID(),type,dateOfMembership,address,phoneNumber));
+    public String registerMember(Reader reader,MembershipType type, LocalDate dateOfMembership,String address,String phoneNumber){
+      return  library.addMember(new MemberRecord(reader.getName(),reader.getBudget(),generateUniqueMemberID(),type,dateOfMembership,address,phoneNumber));
     }
     private String generateUniqueMemberID(){
         return "MEM"+memberIDCounter.incrementAndGet();

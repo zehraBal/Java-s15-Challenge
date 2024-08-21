@@ -1,5 +1,4 @@
-import org.workintech.books.Book;
-import org.workintech.books.Status;
+import org.workintech.books.*;
 import org.workintech.library.Library;
 import org.workintech.person.*;
 
@@ -7,10 +6,7 @@ import java.sql.SQLOutput;
 import java.time.LocalDate;
 
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -64,51 +60,51 @@ public class Main {
 //       System.out.println(ahmetUmit);
 //       System.out.println(elifShafak);
 
-       List<Book> allBooks=new ArrayList<>();
+        List<Book> allBooks = new ArrayList<>();
         allBooks.addAll(elifShafakBooks);
         allBooks.addAll(hakanGundayBooks);
         allBooks.addAll(orhanPamukBooks);
         allBooks.addAll(ahmetUmitBooks);
         allBooks.addAll(sabahattinAliBooks);
 
-   //     System.out.println(allBooks);
+        //     System.out.println(allBooks);
 
-        List<Reader> readers=new ArrayList<>();
-        readers.add(new Reader("Ahmet Yılmaz",260.0));
-        readers.add(new Reader("Ayşe Korkmaz",300.02));
-        readers.add(new Reader("Mehmet Tanrıverdi",150.18));
-        readers.add(new Reader("Işık Saçan",1000.78));
-        readers.add(new Reader("Zehra Bal",80.78));
-        readers.add(new Reader("Salih Bal",15000.0));
-        Map<Author,List<Book>> libraryContent=new TreeMap<>();
-        libraryContent.put(hakanGunday,hakanGundayBooks);
-        libraryContent.put(elifShafak,elifShafakBooks);
-        libraryContent.put(sabahattinAli,sabahattinAliBooks);
-        libraryContent.put(orhanPamuk,orhanPamukBooks);
-        libraryContent.put(ahmetUmit,ahmetUmitBooks);
-        Library library =new Library(libraryContent,readers);
-       //  System.out.println(library);
+        List<Reader> readers = new ArrayList<>();
+        readers.add(new Reader("Ahmet Yılmaz", 260.0));
+        readers.add(new Reader("Ayşe Korkmaz", 300.02));
+        readers.add(new Reader("Mehmet Tanrıverdi", 150.18));
+        readers.add(new Reader("Işık Saçan", 1000.78));
+        readers.add(new Reader("Zehra Bal", 80.78));
+        readers.add(new Reader("Salih Bal", 15000.0));
+        Map<Author, List<Book>> libraryContent = new TreeMap<>();
+        libraryContent.put(hakanGunday, hakanGundayBooks);
+        libraryContent.put(elifShafak, elifShafakBooks);
+        libraryContent.put(sabahattinAli, sabahattinAliBooks);
+        libraryContent.put(orhanPamuk, orhanPamukBooks);
+        libraryContent.put(ahmetUmit, ahmetUmitBooks);
+        Library library = new Library(libraryContent, readers);
+        //  System.out.println(library);
         // System.out.println( library.getBook(1L));
 
-        Reader reader=readers.get(0);
-     //   System.out.println(reader.getName());
+        Reader reader = readers.get(0);
+        //   System.out.println(reader.getName());
 //        Book newbook=allBooks.get(5);
 //        LocalDate purchaseDate=LocalDate.of(2023,11,11);
 //        reader.purchaseBook(newbook,purchaseDate);
-     //   System.out.println(reader.getPurchasedBooks());
-    //    System.out.println(library);
+        //   System.out.println(reader.getPurchasedBooks());
+        //    System.out.println(library);
 
-    //    library.newBook(new Book(101L,hakanGunday,"Zamir",170.89,Status.AVAILABLE,"Second Edition"));
-     //    System.out.println(library);
-   //     Author georgeOrwell = new Author("George Orwell");
-   //    library.newBook(new Book(16L, georgeOrwell, "1984", 180.50, Status.AVAILABLE, "first edition"));
+        //    library.newBook(new Book(101L,hakanGunday,"Zamir",170.89,Status.AVAILABLE,"Second Edition"));
+        //    System.out.println(library);
+        //     Author georgeOrwell = new Author("George Orwell");
+        //    library.newBook(new Book(16L, georgeOrwell, "1984", 180.50, Status.AVAILABLE, "first edition"));
 //
 //        System.out.println(library.getBook(16L));
 //        System.out.println(library.getReaders());
 //        reader.borrowBook(newbook,purchaseDate);
 //        System.out.println(newbook.getDateOfPurchase());
-            Librarian librarian =new Librarian("Alicent","12345",library);
-         LocalDate today=LocalDate.now();
+        Librarian librarian = new Librarian("Alicent", "12345", library);
+        LocalDate today = LocalDate.now();
 //        System.out.println(today);
 //        System.out.println(newbook.getStatus());
 //       // long daysOverdue = ChronoUnit.DAYS.between(purchaseDate,today);
@@ -117,28 +113,58 @@ public class Main {
 //         reader.borrowBook(library.getBook(8L),purchaseDate);
 //         System.out.println(library.getBook(8L).getStatus());
 //        librarian.calculateFine(newbook);
-     //   System.out.println(library);
+        //   System.out.println(library);
         Book newbook = allBooks.get(5);
         LocalDate borrowDate = LocalDate.of(2023, 11, 11);
-   //     reader.borrowBook(newbook, borrowDate);
-  //      System.out.println("Kitabın durumu: " + newbook.getStatus()); // BURROWED bekleniyor
+        //     reader.borrowBook(newbook, borrowDate);
+        //      System.out.println("Kitabın durumu: " + newbook.getStatus()); // BURROWED bekleniyor
 
 // Güncel durumu doğrulamak için:
-        librarian.registerMember(reader, MembershipType.PERSONAL_MEMBERSHIP ,today,"istanbul/Maltepe","5877894512");
-        MemberRecord member=library.getMemberByID("MEM1");
+        librarian.registerMember(reader, MembershipType.PERSONAL_MEMBERSHIP, today, "istanbul/Maltepe", "5877894512");
+        MemberRecord member = library.getMemberByID("MEM1");
         System.out.println(library.getMembers());
-       librarian.issueBook(11L,library.getMemberByID("MEM1"),today);
-        librarian.issueBook(13L,library.getMemberByID("MEM1"),today);
+      //  librarian.issueBook(11L, library.getMemberByID("MEM1"), today);
+     //   librarian.issueBook(13L, library.getMemberByID("MEM1"), today);
 //       System.out.println(  library.getMemberByID("MEM1"));
 //        System.out.println(library.getMemberByID("MEM1").getBorrowedBooks());
 //        System.out.println(reader.getBorrowedBooks());
 //        System.out.println(reader.toString());
 
-  //     System.out.println(member.getBorrowedBooks());
- //       System.out.println(member.getPurchasedBooks());
-  //      System.out.println(library);
+        //     System.out.println(member.getBorrowedBooks());
+        //       System.out.println(member.getPurchasedBooks());
+        //      System.out.println(library);
         System.out.println(member);
-    librarian.returnBook(member,library.getBook(11L));
+   //     librarian.returnBook(member, library.getBook(11L));
         System.out.println(member);
+        librarian.verifyMember(member);
+        System.out.println( member.getMemberID());
+        System.out.println(library.getMembers());
+        System.out.println(librarian.verifyMember(member));
+        System.out.println(library.getMemberByID("mem2"));
+//        Author orwell = new Author("George Orwell");
+//        Author asimov = new Author("Isaac Asimov");
+//
+//        Book book1 = new ScienceFictionBooks(1, orwell, "1984", 15.00, Status.AVAILABLE, "1st Edition");
+//        Book book2 = new ScienceFictionBooks(2, asimov, "Foundation", 12.50, Status.AVAILABLE, "2nd Edition");
+//        Book book3 = new FantasyFictionBooks(3, orwell, "Animal Farm", 10.00, Status.AVAILABLE, "3rd Edition");
+//        Book book4 = new WorldClassicsBooks(4, orwell, "Homage to Catalonia", 14.00, Status.AVAILABLE, "1st Edition");
+//        Book book5 = new TurkishLiteratureBooks(5, asimov, "Nightfall", 18.00, Status.AVAILABLE, "2nd Edition");
+//
+//        Map<Author, List<Book>> libraryContents = new HashMap<>();
+//        libraryContents.put(orwell, new ArrayList<>(List.of(book1, book3, book4)));
+//        libraryContents.put(asimov, new ArrayList<>(List.of(book2, book5)));
+//        // Başlangıç okuyucuları
+//        Reader reader1 = new Reader("John Doe", 50.00);
+//        Reader reader2 = new Reader("Jane Smith", 30.00);
+//        Reader reader3 = new Reader("Alice Johnson", 40.00);
+//        Reader reader4 = new Reader("Bob Brown", 20.00);
+//
+//        List<Reader> readers = new ArrayList<>(List.of(reader1, reader2));
+//
+//        // Kütüphane ve kütüphaneci oluşturma
+//        Library library = new Library(libraryContents, readers);
+//        System.out.println(libraryContents);
+//        library.getBooks();
+        library.getBooks();
     }
 }

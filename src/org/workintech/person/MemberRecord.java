@@ -3,6 +3,7 @@ package org.workintech.person;
 import org.workintech.books.Book;
 
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public class MemberRecord extends Reader{
    private final String memberID;
@@ -12,6 +13,7 @@ public class MemberRecord extends Reader{
    private final int maxBookLimit;
    private final String address;
    private final String phoneNumber;
+   private double lateReturnFee;
 
 
     public MemberRecord(String name, double budget, String memberID, MembershipType type, LocalDate dateOfMembership, String address, String phoneNumber) {
@@ -26,6 +28,14 @@ public class MemberRecord extends Reader{
 
     }
 
+    public double getLateReturnFee() {
+        return lateReturnFee;
+    }
+
+    public void setLateReturnFee(double lateReturnFee) {
+        this.lateReturnFee = lateReturnFee;
+    }
+
     public String getMemberID() {
         return memberID;
     }
@@ -38,6 +48,29 @@ public class MemberRecord extends Reader{
         this.type = type;
     }
 
+    public void payLateFee(double lateReturnFee){
+        if(this.getType()==MembershipType.PENALIZED_MEMBERSHIP && lateReturnFee>0){
+        System.out.println("Since you do not have enough balance, please load balance first. Please enter the amount you want to deposit:");
+        Scanner scan=new Scanner(System.in);
+        double amount=Double.parseDouble(scan.next());
+        setBudget(getBudget()+amount);
+        if(getBudget()<=lateReturnFee){
+            System.out.println("Your balance: "+getBudget()+" Your late return fee: "+lateReturnFee);
+            System.out.println("You do not have enough balance to pay the fine. ;The minimum balance required to pay yur fine is $"+(lateReturnFee-getBudget())+" Please write \"continue\" to deposit this amount. If you do not want to pay your fine, please write \"cancel\".");
+            if (scan.next().equalsIgnoreCase("continue")){
+                setBudget(getBudget()+(lateReturnFee-getBudget()));
+                System.out.println("Balance: "+getBudget());
+                System.out.println("You have paid your fee.Your balance: "+ getBudget()+ " You can now borrow books. Enjoy our library :)");
+               setBudget(getBudget()-lateReturnFee);
+               updateType(MembershipType.PERSONAL_MEMBERSHIP);
+            } else if (scan.next().equalsIgnoreCase("cancel")){
+                System.out.println("Transaction cancelled.");
+            }
+        }
+        }else {
+            System.out.println("You don't have any fine yo pay.Enjoy our library :)");
+        }
+    }
 
     @Override
     public void borrowBook(Book book, LocalDate date) {

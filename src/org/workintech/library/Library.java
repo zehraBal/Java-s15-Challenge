@@ -30,13 +30,23 @@ public class Library {
 
     public MemberRecord getMemberByID(String memberID){
         for(MemberRecord mem:members){
-            if(mem.getMemberID().equals(memberID)){
+            if(mem.getMemberID().equalsIgnoreCase(memberID)){
                 return mem;
             }
         }
         System.out.println("There is no registered member with the ID you are looking for.");
         return null;
     }
+    public Reader findReaderByName(String name) {
+        for (Reader reader : readers) {
+            if (reader.getName().equalsIgnoreCase(name)) {
+                return reader;
+            }
+        }
+        return null;
+    }
+
+
 
     public String showBook(Author author,long bookID) {
         Set<Author> keys=libraryContents.keySet();
@@ -65,16 +75,22 @@ public class Library {
         authorBooks.add(book);
     }
 
-    public void getBooks(){
-        Set<Author> keys=libraryContents.keySet();
-        for(Author key:keys){
-            List<Book> authorBooks=libraryContents.get(key);
-            for(Book book:authorBooks){
-                System.out.println(book.toString());
-            }
+//    public void getBooks(){
+//        Set<Author> keys=libraryContents.keySet();
+//        for(Author key:keys){
+//            List<Book> authorBooks=libraryContents.get(key);
+//            for(Book book:authorBooks){
+//                System.out.println(book.toString());
+//            }
+//        }
+//    }
+public void getBooks() {
+    for (List<Book> books : libraryContents.values()) {
+        for (Book book : books) {
+            System.out.println(book);
         }
     }
-
+}
 
 
     public Book getBook(long bookID){
@@ -123,8 +139,25 @@ public class Library {
         }
         return null;
     }
-    public void addMember(MemberRecord member){
+    public String addMember(MemberRecord member){
         members.add(member);
+        return member.getMemberID();
+    }
+
+    public void lendBook(Book book){
+        List<Book> books=libraryContents.get(book.getAuthor());
+       if(books.contains(book)){
+           books.remove(book);
+           libraryContents.put(book.getAuthor(),books);
+       }
+    }
+
+    public void takeBackBook(Book book){
+        List<Book> books=libraryContents.get(book.getAuthor());
+        if(!books.contains(book)){
+            books.add(book);
+            libraryContents.put(book.getAuthor(),books);
+        }
     }
 
 @Override
