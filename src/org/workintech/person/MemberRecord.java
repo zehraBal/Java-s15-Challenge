@@ -29,6 +29,10 @@ public class MemberRecord extends Reader{
 
     }
 
+    public int getNumberOfBooksIssued() {
+        return numberOfBooksIssued;
+    }
+
     public double getLateReturnFee() {
         return lateReturnFee;
     }
@@ -75,14 +79,18 @@ public class MemberRecord extends Reader{
 
     @Override
     public void borrowBook(Book book, LocalDate date) {
-        super.borrowBook(book, date);
-        this.numberOfBooksIssued = getBorrowedBooks().size() + getPurchasedBooks().size();
+            super.borrowBook(book, date);
+            this.numberOfBooksIssued = getBorrowedBooks().size() + getPurchasedBooks().size();
+
     }
 
     @Override
     public void purchaseBook(Book book, LocalDate purchaseDate) {
-        super.purchaseBook(book, purchaseDate);
-        this.numberOfBooksIssued = getBorrowedBooks().size() + getPurchasedBooks().size();
+
+            super.purchaseBook(book, purchaseDate);
+//            this.numberOfBooksIssued = getBorrowedBooks().size() + getPurchasedBooks().size();
+
+
     }
     @Override
     public String toString() {

@@ -1,6 +1,7 @@
 package org.workintech.library;
 
 import org.workintech.books.Book;
+import org.workintech.books.Genre;
 import org.workintech.person.Author;
 import org.workintech.person.MemberRecord;
 import org.workintech.person.Reader;
@@ -108,12 +109,20 @@ public void getBooks() {
 
     }
 
-    public List<Book> getBooksByAuthor(Author author){
+    public Author findAuthorByName(String name){
         Set<Author> authors=libraryContents.keySet();
-       if(authors.contains(author)){
-         return  libraryContents.get(author);
-       }
-    return null;
+        for(Author auth:authors){
+            if(auth.getName().equals(name)){
+                return auth;
+            }
+        }
+        return null;
+    }
+    public void getBooksByAuthor(Author author){
+        List<Book> authorBooks = libraryContents.get(author);
+        for (Book book:authorBooks){
+            System.out.println(book);
+        }
     }
 
     public Book getBook(String title){
@@ -129,6 +138,18 @@ public void getBooks() {
         return null;
     }
 
+    public void getBooksByGenre(Genre genre) {
+
+        System.out.println(genre.name()+"Books");
+        for (List<Book> books : libraryContents.values()) {
+            for (Book book : books) {
+                if (book.getGenre() != null && book.getGenre().equals(genre)) {
+                    System.out.println(book);
+                }
+            }
+        }
+
+    }
 
     public Book findBookById(long bookId) {
         for (List<Book> books : libraryContents.values()) {

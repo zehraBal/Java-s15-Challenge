@@ -58,7 +58,7 @@ public class Reader extends Person{
             book.updateStatus(Status.PURCHASED);
             book.changeOwner(this);
             book.setDateOfPurchase(purchaseDate);
-            System.out.println("The book purchased successfully.Remaining budget is: "+budget);
+//            System.out.println("The book purchased successfully.Remaining budget is: "+budget);
         }else{
             System.out.println("Transaction failed.");
         }
@@ -70,6 +70,7 @@ public class Reader extends Person{
             borrowedBooks.add(book);
             book.updateStatus(Status.BORROWED);
             budget-=book.getPrice()*0.2;
+
             book.changeOwner(this);
             book.setDateOfPurchase(date);
             System.out.println("The book borrowed successfully.");
@@ -160,7 +161,7 @@ public class Reader extends Person{
             sb.append("* ").append(String.format("%-" + width + "s", "edition: " + book.getEdition())).append(" *").append("\n");
             sb.append("* ").append(String.format("%-" + width + "s", "dateOfPurchase: " + book.getDateOfPurchase())).append(" *").append("\n");
             sb.append("*").append(" ".repeat(width + 2)).append("*").append("\n");
-            //  sb.append(border).append("\n");
+              sb.append(border).append("\n");
         }
 
         return sb.toString();

@@ -115,7 +115,7 @@ public class LibraryApp {
         libraryContents.put(bradbury,bradburyBooks);
         libraryContents.put(clarke,clarkeBooks);
 
-        System.out.println(tolkienBooks);
+
         // Başlangıç okuyucuları
         Reader reader1 = new Reader("John Doe", 500.00);
         Reader reader2 = new Reader("Jane Smith", 300.00);
@@ -151,14 +151,76 @@ public class LibraryApp {
 
             switch (choice) {
                 case 1:
-                    System.out.print("Enter the title of the book you want to search: ");
-                    String title = scanner.nextLine();
-                    Book foundBook = library.getBook(title);
-                    if (foundBook != null) {
-                        System.out.println(foundBook);
-                    } else {
-                        System.out.println("Book not found.");
+                    System.out.println("Choose search type:");
+                    System.out.println("1. All Books");
+                    System.out.println("2. Books by Author");
+                    System.out.println("3. Books by Title");
+                    System.out.println("4. Books by ID");
+                    System.out.println("5. Books by Genre");
+                    System.out.println("6. Return te the main menu");
+                    System.out.println("Your Choice:");
+                    int seaarchType = scanner.nextInt();
+                    scanner.nextLine();
+                    switch (seaarchType){
+                        case 1:
+                            System.out.println("All Books:");
+                            library.getBooks(); // Display all books
+                            break;
+
+                        case 2:
+                            System.out.print("Enter the name of the author: ");
+                            String authorName = scanner.nextLine();
+                            Author author = library.findAuthorByName(authorName);
+                            library.getBooksByAuthor(author);
+                            break;
+
+                        case 3:
+                            System.out.println("Enter the title of the book: ");
+                            String title=scanner.nextLine();
+                            System.out.println(library.getBook(title));
+                            break;
+
+                        case 4:
+                            System.out.println("Enter the ID of the book: ");
+                            long bookId=scanner.nextLong();
+                            System.out.println(library.getBook(bookId));
+                            break;
+                        case 5:
+                            System.out.println("Enter the genre of the books you want to search: ");
+                            String genreName=scanner.nextLine();
+                            switch (genreName){
+                                case "fantasy":
+                                    System.out.println("Fantasy Fiction Books");
+                                    library.getBooksByGenre(Genre.FANTASY_FICTION);
+                                    break;
+                                case "world classics":
+                                    System.out.println("World Classics Books");
+                                    library.getBooksByGenre(Genre.WORLD_CLASSICS);
+                                    break;
+                                case "turkish literature":
+                                    System.out.println("Turkish Literature Books");
+                                    library.getBooksByGenre(Genre.TURKISH_LITERATURE);
+                                    break;
+                                case   "science fiction":
+                                    System.out.println("Science Fiction Books");
+                                    library.getBooksByGenre(Genre.SCIENCE_FICTION);
+                                    break;
+                            }
+
+                            break;
+
+                        case 6:
+                            break;
                     }
+
+//                    System.out.print("Enter the title of the book you want to search: ");
+//                    String title = scanner.nextLine();
+//                    Book foundBook = library.getBook(title);
+//                    if (foundBook != null) {
+//                        System.out.println(foundBook);
+//                    } else {
+//                        System.out.println("Book not found.");
+//                    }
                     break;
 
                 case 2:  // Issue Book
@@ -177,11 +239,12 @@ public class LibraryApp {
                             System.out.print("Enter the ID of the book you want to borrow: ");
                             long bookId = scanner.nextLong();
                             Book bookToBorrow = library.getBook(bookId);
-                            if (bookToBorrow != null && bookToBorrow.getStatus() == Status.AVAILABLE) {
+                            if (bookToBorrow != null && bookToBorrow.getStatus() == Status.AVAILABLE && member.getNumberOfBooksIssued()<5) {
                                 member.borrowBook(bookToBorrow,LocalDate.now());
                                 librarian.issueBook(bookId,"borrow");
+                                librarian.createBill(member,bookToBorrow,"borrow",LocalDate.now());
                             } else {
-                                System.out.println("The book is not available.");
+                                System.out.println("The book is not available or you have reached max number of issued books.");
                             }
                         } else {
                             System.out.println("Member not found.");
@@ -195,9 +258,11 @@ public class LibraryApp {
                             System.out.print("Enter the ID of the book you want to purchase: ");
                             long bookId = scanner.nextLong();
                             Book bookToPurchase = library.getBook(bookId);
-                            if (bookToPurchase != null && bookToPurchase.getStatus() == Status.AVAILABLE) {
+                            if (bookToPurchase != null && bookToPurchase.getStatus() == Status.AVAILABLE ) {
                                 reader.purchaseBook(bookToPurchase, LocalDate.now());
                                 librarian.issueBook(bookId,"purchase");
+                                librarian.createBill(reader,bookToPurchase,"borrow",LocalDate.now());
+
                             } else {
                                 System.out.println("The book is not available.");
                             }
